@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class AESCipherTest {
 
     @Test
-    public void validatePinShouldReturnTrueWhenGivenValidPins() throws Exception {
-        Method method = AESCipher.class.getDeclaredMethod("validatePin", String.class);
+    public void pinIsValidShouldReturnTrueWhenGivenValidPins() throws Exception {
+        Method method = AESCipher.class.getDeclaredMethod("pinIsValid", String.class);
         method.setAccessible(true);
 
         assertTrue((boolean) method.invoke(AESCipher.class, "1234"));
@@ -23,8 +23,8 @@ class AESCipherTest {
     }
 
     @Test
-    public void validatePinShouldReturnFalseWhenGivenNotValidPins() throws Exception {
-        Method method = AESCipher.class.getDeclaredMethod("validatePin", String.class);
+    public void pinIsValidShouldReturnFalseWhenGivenNotValidPins() throws Exception {
+        Method method = AESCipher.class.getDeclaredMethod("pinIsValid", String.class);
         method.setAccessible(true);
 
         assertFalse((boolean) method.invoke(AESCipher.class, "a124"));

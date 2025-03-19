@@ -1,4 +1,4 @@
-package pl.bsk.project.bsk_project;
+package pl.bsk.project.bsk_project.component;
 
 import java.io.File;
 import java.nio.file.Files;

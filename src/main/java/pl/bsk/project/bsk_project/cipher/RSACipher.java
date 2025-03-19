@@ -23,7 +23,7 @@ public class RSACipher {
     private final String pin;
 
     public RSACipher(String pin) {
-        if (!AESCipher.validatePin(pin)) {
+        if (!AESCipher.pinIsValid(pin)) {
             throw new IllegalArgumentException("Pin is not valid");
         }
 

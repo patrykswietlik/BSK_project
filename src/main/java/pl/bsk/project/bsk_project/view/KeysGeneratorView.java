@@ -10,7 +10,7 @@ public class KeysGeneratorView extends Application {
     @Override
     public void start(Stage primaryStage) {
         KeysGeneratorService keysGeneratorService = new KeysGeneratorService();
-        Scene scene = new Scene(keysGeneratorService, 300, 500);
+        Scene scene = new Scene(keysGeneratorService, 720, 576);
 
         primaryStage.setTitle("Key Generator");
         primaryStage.setScene(scene);
