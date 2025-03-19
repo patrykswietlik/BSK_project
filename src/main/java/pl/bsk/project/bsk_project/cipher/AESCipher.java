@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class AESCipher {
 
     private static SecretKey generateKeyFromPin(String pin) throws Exception {
-        if (!validatePin(pin)) {
+        if (!pinIsValid(pin)) {
             throw new IllegalArgumentException("Pin is not valid");
         }
 
@@ -53,7 +53,7 @@ public class AESCipher {
         return new String(data, StandardCharsets.UTF_8);
     }
 
-    public static boolean validatePin(String pin) {
+    public static boolean pinIsValid(String pin) {
         Pattern pattern = Pattern.compile("^\\d{4}$");
         Matcher matcher = pattern.matcher(pin);
         return matcher.matches();

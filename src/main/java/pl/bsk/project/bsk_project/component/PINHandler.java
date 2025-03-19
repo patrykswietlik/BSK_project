@@ -80,12 +80,14 @@ public class PINHandler extends VBox {
 
     protected void submitPin(ActionEvent event) {
         submitHandler.accept(getPin());
+        submitButton.setDisable(true);
     }
 
     protected void clearPin(ActionEvent event) {
         pin.delete(0, 4);
         submitButton.setDisable(true);
         pinLabel.setText("");
+        submitHandler.accept(getPin());
     }
 
     public String getPin() {
