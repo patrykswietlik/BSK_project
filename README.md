@@ -34,4 +34,7 @@ To run this project, you will need to add the following environment variables
 
 `PRIVATE_KEY_FORMAT_ALGORITHM` - algorithm that encrypts the private key
 
+`SIGNATURE_ALGORITHM` - algorithm used to create signature
+
+`KEY_LENGTH` - private key length in bits
 

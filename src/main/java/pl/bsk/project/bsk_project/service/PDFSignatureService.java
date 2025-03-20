@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import pl.bsk.project.bsk_project.cipher.AESCipher;
 import pl.bsk.project.bsk_project.cipher.KeyType;
 import pl.bsk.project.bsk_project.cipher.RSACipher;
-import pl.bsk.project.bsk_project.component.PDFSigner;
+import pl.bsk.project.bsk_project.component.PDFSignature;
 import pl.bsk.project.bsk_project.component.PINHandler;
 
 import javax.swing.filechooser.FileSystemView;
@@ -18,7 +18,7 @@ import java.io.File;
 import java.security.PrivateKey;
 import java.util.Objects;
 
-public class PDFSignerService extends VBox {
+public class PDFSignatureService extends VBox {
 
     private final Label pinStatusLabel = new Label();
 
@@ -32,18 +32,22 @@ public class PDFSignerService extends VBox {
 
     private File selectedPdf;
 
-    public PDFSignerService() {
+    public PDFSignatureService() {
         Button chooseFileButton = new Button("Wybierz plik PDF do podpisania");
         chooseFileButton.setOnAction(this::setFile);
 
         PINHandler pinHandler = new PINHandler(this::setPin);
+
+        Button signPdf = new Button("Sign");
+        signPdf.setOnAction(this::signPdf);
 
         this.getChildren().addAll(
                 pinHandler,
                 pinStatusLabel,
                 pdfFileLabel,
                 privateKeyStatusLabel,
-                chooseFileButton
+                chooseFileButton,
+                signPdf
         );
 
         handleUSBThread();
@@ -79,9 +83,14 @@ public class PDFSignerService extends VBox {
 
     private void signPdf(ActionEvent event) {
         RSACipher rsaCipher = new RSACipher(pin);
+        String absolutePath = selectedPdf.getAbsolutePath();
+        File output = new File(
+                absolutePath.replace(".pdf", "_signed.pdf")
+        );
+
         try {
             PrivateKey privateKey = (PrivateKey) rsaCipher.loadKey(privateKeyPath, KeyType.PRIVATE_KEY);
-            byte[] signature = PDFSigner.sign(selectedPdf, privateKey);
+            PDFSignature.sign(selectedPdf, output, privateKey);
         } catch (Exception e) {
             return;
         }
