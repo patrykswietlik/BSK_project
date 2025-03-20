@@ -3,15 +3,16 @@ package pl.bsk.project.bsk_project.view;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import pl.bsk.project.bsk_project.service.PDFSignerService;
+import pl.bsk.project.bsk_project.service.PDFSignatureService;
 
-public class PDFSignerView extends Application {
+public class PDFSignatureView extends Application {
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        PDFSignerService pdfSignerService = new PDFSignerService();
-        Scene scene = new Scene(pdfSignerService, 720, 576);
+        PDFSignatureService pdfSignatureService = new PDFSignatureService();
+        Scene scene = new Scene(pdfSignatureService, 720, 576);
 
-        primaryStage.setTitle("PDF Signer");
+        primaryStage.setTitle("PDF Signature");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

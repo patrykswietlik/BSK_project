@@ -13,6 +13,7 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 public class RSACipher {
 
@@ -34,7 +35,11 @@ public class RSACipher {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
                 EnvHandler.getSystemEnv("PRIVATE_KEY_FORMAT_ALGORITHM")
         );
-        keyPairGenerator.initialize(4096);
+        keyPairGenerator.initialize(
+               Integer.parseInt(
+                       EnvHandler.getSystemEnv("KEY_LENGTH")
+               )
+        );
 
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
@@ -65,16 +70,18 @@ public class RSACipher {
         byte[] key = Files.readAllBytes(Paths.get(path, isPrivateKey ? "private_key.bin" : "public_key.bin"));
         byte[] decoded = isPrivateKey ? AESCipher.decrypt(pin, key) : key;
 
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+
         KeyFactory keyFactory = KeyFactory.getInstance(
                 EnvHandler.getSystemEnv("PRIVATE_KEY_FORMAT_ALGORITHM")
         );
 
         if (isPrivateKey) {
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
             return keyFactory.generatePrivate(keySpec);
+        } else {
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
+            return keyFactory.generatePublic(keySpec);
         }
-
-        return keyFactory.generatePublic(keySpec);
 
     }
 }
