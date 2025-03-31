@@ -132,12 +132,13 @@ public class KeysGeneratorService extends VBox {
 
         try {
             rsaCipher.generateKeyPair();
-            rsaCipher.saveKey(privateKeySavePath.toString(), KeyType.PRIVATE_KEY);
-            rsaCipher.saveKey(publicKeySavePath.toString(), KeyType.PUBLIC_KEY);
+            rsaCipher.saveKeyPem(privateKeySavePath.toString(), KeyType.PRIVATE_KEY);
+            rsaCipher.saveKeyPem(publicKeySavePath.toString(), KeyType.PUBLIC_KEY);
 
             displayLogMessage("Para kluczy została wygenerowana", false);
         } catch (Exception e) {
             displayLogMessage("Wystąpił błąd", true);
+            e.printStackTrace();
         }
 
     }

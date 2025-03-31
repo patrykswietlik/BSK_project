@@ -68,7 +68,7 @@ public class PDFSignatureVerifyService extends VBox {
         RSACipher rsaCipher = new RSACipher("1234");
 
         try {
-            PublicKey publicKey = (PublicKey) rsaCipher.loadKey(privateKeyPath, KeyType.PUBLIC_KEY);
+            PublicKey publicKey = (PublicKey) rsaCipher.loadKeyPem(privateKeyPath, KeyType.PUBLIC_KEY);
             boolean signatureIsValid = PDFSignature.verify(selectedPdf, publicKey);
 
             verificationResultLabel.setText("Podpis jest " + (signatureIsValid ? "POPRAWNY" : "NIEPOPRWANY"));

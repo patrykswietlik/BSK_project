@@ -89,10 +89,10 @@ public class PDFSignatureService extends VBox {
         );
 
         try {
-            PrivateKey privateKey = (PrivateKey) rsaCipher.loadKey(privateKeyPath, KeyType.PRIVATE_KEY);
+            PrivateKey privateKey = (PrivateKey) rsaCipher.loadKeyPem(privateKeyPath, KeyType.PRIVATE_KEY);
             PDFSignature.sign(selectedPdf, output, privateKey);
         } catch (Exception e) {
-            return;
+            e.printStackTrace();
         }
     }
 
