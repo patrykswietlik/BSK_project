@@ -1,15 +1,23 @@
 package pl.bsk.project.bsk_project.cipher;
 
+import org.bouncycastle.eac.operator.EACSignatureVerifier;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.util.io.pem.PemWriter;
 import pl.bsk.project.bsk_project.utils.EnvHandler;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.AsymmetricKey;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -51,37 +59,38 @@ public class RSACipher {
         return publicKey;
     }
 
-    public void saveKey(String path, KeyType type) throws Exception {
+    public void saveKeyPem(String path, KeyType type) throws Exception {
         boolean isPrivateKey = type == KeyType.PRIVATE_KEY;
 
-        File dest = new File(path, isPrivateKey ? "private_key.bin" : "public_key.bin" );
         byte[] keyToSave = isPrivateKey ? AESCipher.encrypt(pin, privateKey.getEncoded()) : getPublicKey().getEncoded();
 
-        try (FileOutputStream outputStream = new FileOutputStream(dest)) {
-            outputStream.write(
-                    keyToSave
-            );
+        PemObject pemObject = new PemObject(type.toString(), keyToSave);
+        File dest = new File(path, isPrivateKey ? "private_key.pem" : "public_key.pem" );
+
+        try (PemWriter pemWriter = new PemWriter(new FileWriter(dest))) {
+            pemWriter.writeObject(pemObject);
         }
     }
 
-    public AsymmetricKey loadKey(String path, KeyType type) throws Exception {
+    public AsymmetricKey loadKeyPem(String path, KeyType type) throws Exception {
         boolean isPrivateKey = type == KeyType.PRIVATE_KEY;
 
-        byte[] key = Files.readAllBytes(Paths.get(path, isPrivateKey ? "private_key.bin" : "public_key.bin"));
-        byte[] decoded = isPrivateKey ? AESCipher.decrypt(pin, key) : key;
+        try (PemReader pemReader = new PemReader(new FileReader(String.valueOf(Paths.get(path, isPrivateKey ? "private_key.pem" : "public_key.pem"))))) {
+            PemObject pemObject = pemReader.readPemObject();
+            byte[] key = pemObject.getContent();
+            byte[] decoded = isPrivateKey ? AESCipher.decrypt(pin, key) : key;
 
+            KeyFactory keyFactory = KeyFactory.getInstance(
+                    EnvHandler.getSystemEnv("PRIVATE_KEY_FORMAT_ALGORITHM")
+            );
 
-        KeyFactory keyFactory = KeyFactory.getInstance(
-                EnvHandler.getSystemEnv("PRIVATE_KEY_FORMAT_ALGORITHM")
-        );
-
-        if (isPrivateKey) {
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
-            return keyFactory.generatePrivate(keySpec);
-        } else {
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
-            return keyFactory.generatePublic(keySpec);
+            if (isPrivateKey) {
+                PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+                return keyFactory.generatePrivate(keySpec);
+            } else {
+                X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
+                return keyFactory.generatePublic(keySpec);
+            }
         }
-
     }
 }

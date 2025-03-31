@@ -2,7 +2,8 @@ module pl.bsk.project.bsk_project {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.desktop;
-    requires org.apache.pdfbox;
+    requires org.bouncycastle.provider;
+    requires org.bouncycastle.pkix;
 
 
     exports pl.bsk.project.bsk_project.view;
