@@ -10,4 +10,6 @@ module pl.bsk.project.bsk_project {
     opens pl.bsk.project.bsk_project.view to javafx.fxml;
     exports pl.bsk.project.bsk_project.component;
     opens pl.bsk.project.bsk_project.component to javafx.fxml;
+    exports pl.bsk.project.bsk_project.utils;
+    opens pl.bsk.project.bsk_project.utils to javafx.fxml;
 }

@@ -14,8 +14,8 @@ import pl.bsk.project.bsk_project.cipher.AESCipher;
 import pl.bsk.project.bsk_project.cipher.KeyType;
 import pl.bsk.project.bsk_project.cipher.RSACipher;
 import pl.bsk.project.bsk_project.component.PINHandler;
+import pl.bsk.project.bsk_project.utils.Util;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -100,7 +100,7 @@ public class KeysGeneratorService extends VBox {
 
         File selectedDirectory = directoryChooser.showDialog(stage);
 
-        if (Objects.isNull(selectedDirectory)) {
+        if (Objects.isNull(selectedDirectory) && Objects.equals(publicKeyPath, "")) {
             displayLogMessage("Nie udało się wybrać ścieżki do zapisu klucza publicznego", true);
             return;
         }
@@ -112,9 +112,9 @@ public class KeysGeneratorService extends VBox {
 
     private void setPin(String pin) {
         if (!AESCipher.pinIsValid(pin)) {
-            pinStatusLabel.setText("Wprowadzono błędny pin");
+            pinStatusLabel.setText("Wyczyszczono PIN");
         } else {
-            pinStatusLabel.setText("Pin został wprowadzony poprawnie");
+            pinStatusLabel.setText("Wprowadzono PIN");
         }
 
         this.pin = pin;
@@ -146,7 +146,7 @@ public class KeysGeneratorService extends VBox {
     private void handleUSBThread() {
         Thread thread = new Thread(() -> {
             while (true) {
-                String optionalPath = getUSBPath();
+                String optionalPath = Util.getUSBPath();
 
                 if (!Objects.isNull(optionalPath)) {
                     Platform.runLater(() -> {
@@ -173,19 +173,6 @@ public class KeysGeneratorService extends VBox {
 
         thread.setDaemon(true);
         thread.start();
-    }
-
-    private String getUSBPath() {
-        File[] roots = File.listRoots();
-        FileSystemView fileSystemView = FileSystemView.getFileSystemView();
-
-        for (File root : roots) {
-            if (fileSystemView.getSystemDisplayName(root).contains("USB")) {
-                return root.getPath();
-            }
-        }
-
-        return null;
     }
 
     private void displayLogMessage(String message, boolean isError) {

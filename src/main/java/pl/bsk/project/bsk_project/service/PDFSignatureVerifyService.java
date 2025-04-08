@@ -2,16 +2,18 @@ package pl.bsk.project.bsk_project.service;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.bsk.project.bsk_project.cipher.KeyType;
 import pl.bsk.project.bsk_project.cipher.RSACipher;
 import pl.bsk.project.bsk_project.component.PDFSignature;
+import pl.bsk.project.bsk_project.utils.Util;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.security.PublicKey;
 import java.util.Objects;
@@ -28,6 +30,8 @@ public class PDFSignatureVerifyService extends VBox {
 
     private File selectedPdf;
 
+    private final Label logLabel = new Label();
+
     public PDFSignatureVerifyService() {
         Button chooseFileButton = new Button("Wybierz plik PDF do sprawdzenia podpisu");
         chooseFileButton.setOnAction(this::setFile);
@@ -35,12 +39,35 @@ public class PDFSignatureVerifyService extends VBox {
         Button signPdf = new Button("Check");
         signPdf.setOnAction(this::verifySignature);
 
-        this.getChildren().addAll(
+        setAlignment(Pos.CENTER);
+        setSpacing(10);
+        setStyle("-fx-font-size: 16px;");
+
+        HBox upperPanel = new HBox();
+        upperPanel.setSpacing(10);
+        upperPanel.setAlignment(Pos.CENTER);
+
+        VBox innerPanel = new VBox();
+        innerPanel.setSpacing(10);
+        innerPanel.setStyle("-fx-border-width: 2px; -fx-border-color: black; -fx-pref-width: 400px; -fx-padding: 10px");
+
+        privateKeyStatusLabel.setWrapText(true);
+        logLabel.setWrapText(true);
+        pdfFileLabel.setWrapText(true);
+
+        innerPanel.getChildren().addAll(
                 pdfFileLabel,
                 privateKeyStatusLabel,
                 chooseFileButton,
                 signPdf,
                 verificationResultLabel
+        );
+        upperPanel.getChildren().addAll(
+                innerPanel
+        );
+        this.getChildren().addAll(
+                upperPanel,
+                logLabel
         );
 
         handleUSBThread();
@@ -57,11 +84,15 @@ public class PDFSignatureVerifyService extends VBox {
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (Objects.isNull(selectedFile)) {
+            displayLogMessage("Nie udało się wybrać pliku", true);
+            verificationResultLabel.setText("");
             return;
         }
 
+        displayLogMessage("", false);
         pdfFileLabel.setText("Wybrano: " + selectedFile.getAbsolutePath());
         selectedPdf = selectedFile;
+        verificationResultLabel.setText("");
     }
 
     private void verifySignature(ActionEvent event) {
@@ -81,7 +112,7 @@ public class PDFSignatureVerifyService extends VBox {
     private void handleUSBThread() {
         Thread thread = new Thread(() -> {
             while (true) {
-                String optionalPath = getUSBPath();
+                String optionalPath = Util.getUSBPath();
 
                 if (!Objects.isNull(optionalPath)) {
                     Platform.runLater(() -> {
@@ -108,16 +139,8 @@ public class PDFSignatureVerifyService extends VBox {
         thread.start();
     }
 
-    private String getUSBPath() {
-        File[] roots = File.listRoots();
-        FileSystemView fileSystemView = FileSystemView.getFileSystemView();
-
-        for (File root : roots) {
-            if (fileSystemView.getSystemDisplayName(root).contains("USB")) {
-                return root.getPath();
-            }
-        }
-
-        return null;
+    private void displayLogMessage(String message, boolean isError) {
+        logLabel.setStyle("-fx-text-fill: " + (isError ? "red" : "green"));
+        logLabel.setText(message);
     }
 }

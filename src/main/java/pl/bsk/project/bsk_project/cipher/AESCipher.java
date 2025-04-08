@@ -83,16 +83,6 @@ public class AESCipher {
     }
 
     /**
-     * @brief Converts byte array to UTF-8 string.
-     *
-     * @param data The byte array to convert
-     * @return String representation of the byte array in UTF-8 encoding
-     */
-    public static String toString(byte[] data) {
-        return new String(data, StandardCharsets.UTF_8);
-    }
-
-    /**
      * @brief Validates that a PIN is exactly 4 digits.
      *
      * @param pin The PIN to validate
